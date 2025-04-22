@@ -1,10 +1,27 @@
----
 
-# **Amazon USA Sales Analysis Project**
 
-### **Difficulty Level: Advanced**
 
----
+## 📊 Project Title: Ecommerce Website's Performance - Sales Trend Analytics
+
+
+Author:  Loc Huynh .
+
+Date: Nov. 14, 2024 .
+
+Tools Used: SQL .
+
+
+## Table of Contents
+📌 Project & Overview
+
+📂 Database set up & Design
+
+🧠 Problem Solving Process
+
+📊 Explore the Dataset & Generate Insights
+
+🔎 Final Conclusion & Recommendations
+
 
 ## **Project Overview**
 
@@ -743,7 +760,4 @@ By completing this project, I have gained a deeper understanding of how SQL can 
 
 ---
 
-### **Entity Relationship Diagram (ERD)**
-![ERD](https://github.com/najirh/amazon_usa_project5/blob/main/erd.png)
 
----
