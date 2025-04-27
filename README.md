@@ -403,6 +403,7 @@ ON o.order_id = s.order_id
 WHERE s.shipping_date - o.order_date > 3
 ```
 ![image](https://github.com/user-attachments/assets/a48b863d-a247-4f4c-a48b-49ff2f898297)
+
 💡 Need to work on delivery provider to know the reason behind. Why the product has been shipped lately. In addtion, we can know the reason why some product has been returned
 
 #### Query 🔟:   Payment Success Rate  Calculate the percentage of successful payments across all orders. / Challenge: Include breakdowns by payment status (e.g., failed, pending).
@@ -503,6 +504,7 @@ GROUP BY 1, 2
 ) as t1
 ```
 ![image](https://github.com/user-attachments/assets/a8f1fd66-641d-4481-9b11-f8d0bcc2ede6)
+
 💡To gain deeper insights into the business, it's imperative to ascertain which product exhibits the most substantial profit margin and which yields the scantest return. This granular understanding will enable the formulation of more efficacious and tailored strategies for each product within our portfolio.
 
 #### Query 1️⃣3️⃣:   Most Returned Products Query the top 10 products by the number of returns. / Challenge: Display the return rate as a percentage of total units sold for each product.
@@ -531,29 +533,24 @@ ORDER BY 5 DESC
 #### Query 1️⃣4️⃣:  if the customer has done more than 5 return categorize them as returning otherwise new / Challenge: List customers id, name, total orders, total returns
 
 ```sql
-SELECT 
-c_full_name as customers,
-total_orders,
-total_return,
-CASE
-	WHEN total_return > 5 THEN 'Returning_customers' ELSE 'New'
-END as cx_category
+SELECT
+    c.first_name + ' ' + c.last_name AS customers,
+    COUNT(o.order_id) AS total_orders,
+    SUM(CASE WHEN o.order_status = 'Returned' THEN 1 ELSE 0 END) AS total_return,
+    CASE
+        WHEN SUM(CASE WHEN o.order_status = 'Returned' THEN 1 ELSE 0 END) > 5 THEN 'Returning_customers' ELSE 'New'
+    END AS cx_category
 FROM
-(SELECT 
-	CONCAT(c.first_name, ' ', c.last_name) as c_full_name,
-	COUNT(o.order_id) as total_orders,
-	SUM(CASE WHEN o.order_status = 'Returned' THEN 1 ELSE 0 END) as total_return	
-FROM orders as o
-JOIN 
-customers as c
-ON c.customer_id = o.customer_id
+    Orders AS o
 JOIN
-order_items as oi
-ON oi.order_id = o.order_id
-GROUP BY 1)
+    Customers AS c ON c.customer_id = o.customer_id
+JOIN
+    Order_Items AS oi ON oi.order_id = o.order_id
+GROUP BY
+    c.first_name, c.last_name
 ```
 
----
+💡 Have a fit stragegy for each segment customer. For example give "New Customer" High-quality products/services/ High content useful. and for "Return Customer" sending more voucher, give them more Personalize the experience, Special welcome experience,Act on feedback
 
 ## **Conclusion**
 
