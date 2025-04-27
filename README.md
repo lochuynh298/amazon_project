@@ -308,7 +308,7 @@ WHERE customer_id NOT IN (SELECT
 
 💡 Develop a strategy to regain customer attention by calling them or sending an email to understand the reasons why they've become disengaged.
 
-#### Query 6️⃣:6. Least-Selling Categories by State Identify the least-selling product category for each state. / Challenge: Include the total sales for that category within each state.
+#### Query 6️⃣: Least-Selling Categories by State Identify the least-selling product category for each state. / Challenge: Include the total sales for that category within each state.
 
 ```sql
 WITH ranking_table
@@ -341,11 +341,10 @@ WHERE rank = 1
 ```
 ![image](https://github.com/user-attachments/assets/057c2db3-b7ac-4053-8085-7158d76ff580)
 
-💡
+💡 Interesting Alabama only sell Electronic Need to takle this point. In addition, we can get to know more each category has sold in each state
+#### Query 7️⃣:  Customer Lifetime Value (CLTV) Calculate the total value of orders placed by each customer over their lifetime./ Challenge: Rank customers based on their CLTV.
 
-7. Customer Lifetime Value (CLTV)
-Calculate the total value of orders placed by each customer over their lifetime.
-Challenge: Rank customers based on their CLTV.
+
 
 ```sql
 SELECT 
@@ -362,11 +361,11 @@ order_items as oi
 ON oi.order_id = o.order_id
 GROUP BY 1, 2
 ```
+![image](https://github.com/user-attachments/assets/26a53ceb-5481-4ca4-8e0f-29f515cbbf6f)
 
+💡 The CLTV ranking provides a clear understanding of the long-term value of individual customers. Focusing on retaining and nurturing high-CLTV customers while exploring strategies to increase the value of other segments can contribute significantly to the business's success.
 
-8. Inventory Stock Alerts
-Query products with stock levels below a certain threshold (e.g., less than 10 units).
-Challenge: Include last restock date and warehouse information.
+#### Query 8️⃣:  8. Inventory Stock Alerts Query products with stock levels below a certain threshold (e.g., less than 10 units). / Challenge: Include last restock date and warehouse information.
 
 ```sql
 SELECT 
@@ -381,10 +380,12 @@ products as p
 ON p.product_id = i.product_id
 WHERE stock < 10
 ```
+![image](https://github.com/user-attachments/assets/6a93e044-8718-4e34-85af-dfb9c4e0c659)
+💡 the data signals a critical need for inventory replenishment across the board in warehouse 1. Understanding the reasons behind these low stock levels and optimizing inventory management processes are essential to prevent stockouts and ensure customer demand can be met.
 
-9. Shipping Delays
-Identify orders where the shipping date is later than 3 days after the order date.
-Challenge: Include customer, order details, and delivery provider.
+#### Query 9️⃣:  9. Shipping Delays Identify orders where the shipping date is later than 3 days after the order date. /Challenge: Include customer, order details, and delivery provider.
+
+
 
 ```sql
 SELECT 
@@ -401,10 +402,12 @@ shippings as s
 ON o.order_id = s.order_id
 WHERE s.shipping_date - o.order_date > 3
 ```
+![image](https://github.com/user-attachments/assets/a48b863d-a247-4f4c-a48b-49ff2f898297)
+💡 Need to work on delivery provider to know the reason behind. Why the product has been shipped lately. In addtion, we can know the reason why some product has been returned
 
-10. Payment Success Rate 
-Calculate the percentage of successful payments across all orders.
-Challenge: Include breakdowns by payment status (e.g., failed, pending).
+#### Query 🔟:   Payment Success Rate  Calculate the percentage of successful payments across all orders. / Challenge: Include breakdowns by payment status (e.g., failed, pending).
+
+
 
 ```sql
 SELECT 
@@ -418,9 +421,13 @@ ON o.order_id = p.order_id
 GROUP BY 1
 ```
 
-11. Top Performing Sellers
-Find the top 5 sellers based on total sales value.
-Challenge: Include both successful and failed orders, and display their percentage of successful orders.
+![image](https://github.com/user-attachments/assets/2db3554e-780c-45b6-89d9-4834b28bfbed)
+
+💡 the data highlights a strong payment success rate but also points to a significant issue with refunds that needs to be addressed. Understanding the drivers of these refunds is key to improving profitability and customer satisfaction. The low payment failure rate suggests a well-functioning payment processing system.
+
+#### Query 1️⃣1️⃣ :   11. Top Performing Sellers Find the top 5 sellers based on total sales value. / Challenge: Include both successful and failed orders, and display their percentage of successful orders.
+
+
 
 ```sql
 WITH top_sellers
@@ -469,12 +476,11 @@ SELECT
 FROM sellers_reports
 GROUP BY 1, 2
 ```
+![image](https://github.com/user-attachments/assets/3923b03a-e571-449c-acde-bc0d57976d65)
+💡 We should offer a compliment or a reward to the top five sellers who have worked diligently to achieve their targets. Additionally, we should invite them to share a story or key to their success to help other sellers reach their goals
 
 
-12. Product Profit Margin
-Calculate the profit margin for each product (difference between price and cost of goods sold).
-Challenge: Rank products by their profit margin, showing highest to lowest.
-*/
+#### Query 1️⃣2️⃣:  Product Profit Margin Calculate the profit margin for each product (difference between price and cost of goods sold). / Challenge: Rank products by their profit margin, showing highest to lowest.
 
 
 ```sql
@@ -496,11 +502,10 @@ ON oi.product_id = p.product_id
 GROUP BY 1, 2
 ) as t1
 ```
+![image](https://github.com/user-attachments/assets/a8f1fd66-641d-4481-9b11-f8d0bcc2ede6)
+💡To gain deeper insights into the business, it's imperative to ascertain which product exhibits the most substantial profit margin and which yields the scantest return. This granular understanding will enable the formulation of more efficacious and tailored strategies for each product within our portfolio.
 
-13. Most Returned Products
-Query the top 10 products by the number of returns.
-Challenge: Display the return rate as a percentage of total units sold for each product.
-
+#### Query 1️⃣3️⃣:   Most Returned Products Query the top 10 products by the number of returns. / Challenge: Display the return rate as a percentage of total units sold for each product.
 ```sql
 SELECT 
 	p.product_id,
@@ -517,35 +522,13 @@ ON o.order_id = oi.order_id
 GROUP BY 1, 2
 ORDER BY 5 DESC
 ```
-
-14. Inactive Sellers
-Identify sellers who haven’t made any sales in the last 6 months.
-Challenge: Show the last sale date and total sales from those sellers.
-
-```sql
-WITH cte1 -- as these sellers has not done any sale in last 6 month
-AS
-(SELECT * FROM sellers
-WHERE seller_id NOT IN (SELECT seller_id FROM orders WHERE order_date >= CURRENT_DATE - INTERVAL '6 month')
-)
-
-SELECT 
-o.seller_id,
-MAX(o.order_date) as last_sale_date,
-MAX(oi.total_sale) as last_sale_amount
-FROM orders as o
-JOIN 
-cte1
-ON cte1.seller_id = o.seller_id
-JOIN order_items as oi
-ON o.order_id = oi.order_id
-GROUP BY 1
-```
+![image](https://github.com/user-attachments/assets/7ebc3e7c-66ed-4663-bbae-cae8d67bfc36)
+💡 Understanding which product has the best and worst profit margins is key to creating smarter plans for each one.
 
 
-15. IDENTITY customers into returning or new
-if the customer has done more than 5 return categorize them as returning otherwise new
-Challenge: List customers id, name, total orders, total returns
+
+
+#### Query 1️⃣4️⃣:  if the customer has done more than 5 return categorize them as returning otherwise new / Challenge: List customers id, name, total orders, total returns
 
 ```sql
 SELECT 
