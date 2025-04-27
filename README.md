@@ -1,7 +1,7 @@
 <img src="https://www.pngplay.com/wp-content/uploads/3/Amazon-Web-Services-AWS-Logo-PNG-HD-Quality.png">
 
 
-## 📊 Project Title: Ecommerce Website's Performance - Sales Trend Analytics
+## 📊 Project Title: Amazon USA Sales Analysis Project
 
 
 Author:  Loc Huynh .
@@ -11,28 +11,50 @@ Date: Nov. 14, 2024 .
 Tools Used: SQL .
 
 
-## Table of Contents
-📌 Project & Overview
-
-📂 Database set up & Design
-
-🧠 Problem Solving Process
-
-📊 Explore the Dataset & Generate Insights
-
-🔎 Final Conclusion & Recommendations
+## 📑 Table of Contents  
+1. [📌 Background & Overview](#-background--overview)  
+2. [📂 Dataset Description & Data Structure](#-dataset-description--data-structure)  
+3. [🧠 Problem Solving Process](#-problem-solving-process)  
+4. [📊 Explore the Dataset & Generate Insights](#-explore-the-dataset--generate_insights)  
+5. [🔎 Final Conclusion & Recommendations](#-final-conclusion--recommendations)
 
 
-## **Project Overview**
+## 📌 Background & Overview  
+
+### Objective:
+### 📖 What is this project about? 
 
 I have worked on analyzing a dataset of over 20,000 sales records from an Amazon-like e-commerce platform. This project involves extensive querying of customer behavior, product performance, and sales trends using PostgreSQL. Through this project, I have tackled various SQL problems, including revenue analysis, customer segmentation, and inventory management.
 
 The project also focuses on data cleaning, handling null values, and solving real-world business problems using structured queries.
+### 👤 Who is this project for? 
 
-An ERD diagram is included to visually represent the database schema and relationships between tables.
+➡️ **Marketing Manager** who want to understand the customer segmentation. 
+
+###  ❓Business Questions:  
+
+1.How can we analyze customer behavior, sales trends, and traffic performance to develop an effective new marketing strategy?
+2. Low product availability due to inconsistent restocking.
+3. High return rates for specific product categories.
+4. Significant delays in shipments and inconsistencies in delivery times.
+5 High customer acquisition costs with a low customer retention rate.
+
+
+### 🎯Project Outcome:  
+
+- **Key Insights**: Analysis reveals monthly trends, high traffic from Amazon all highlighting user engagement and behavior. Idenity the reason shippment late, Customer Life Time , AOV
+- **Strategic Focus**: These findings emphasize the importance of data-driven strategies to enhance customer engagement, optimize eCommerce operations, and drive revenue growth.
 
 ---
+## 📂 Dataset Description & Data Structure  
 
+### 📌 Data Source  
+- Source: Kaggles.
+- Size: Over 5000 rows 
+- Format: CSV
+
+
+---
 
 ## **Database Setup & Design**
 
@@ -129,6 +151,16 @@ CREATE TABLE inventory
   CONSTRAINT inventory_fk_products FOREIGN KEY (product_id) REFERENCES products(product_id)
   );
 ```
+![image](https://github.com/user-attachments/assets/1052e054-3c77-4b12-8c2d-ee5cc735a459)
+
+---
+
+## 🧠 Problem Solving Process  
+
+| 1️⃣ Understand Problem | 2️⃣ Break it down into smaller pieces | 3️⃣ Ideate | 4️⃣ Implement and Review 
+|-|-|-|-
+| Which to be calculated (sum, count, ratio, etc.) and grouped? <br> Does it needs any filter (time, conditions, etc.)? | Which tables have data that I want to get? <br> Which columns have data corresponded to the problem? <br> Can I get the data I by one step, if not, break down even smaller? | How many step did I need to get the final result? <br> Is it optimized? | _We'll go through this step in the order of each query listed below_ <br> ⬇️
+
 
 ---
 
@@ -149,32 +181,11 @@ Null values were handled based on their context:
 
 ---
 
-## **Objective**
-
-The primary objective of this project is to showcase SQL proficiency through complex queries that address real-world e-commerce business challenges. The analysis covers various aspects of e-commerce operations, including:
-- Customer behavior
-- Sales trends
-- Inventory management
-- Payment and shipping analysis
-- Forecasting and product performance
-  
-
-## **Identifying Business Problems**
-
-Key business problems identified:
-1. Low product availability due to inconsistent restocking.
-2. High return rates for specific product categories.
-3. Significant delays in shipments and inconsistencies in delivery times.
-4. High customer acquisition costs with a low customer retention rate.
-
----
-
 ## **Solving Business Problems**
 
 ### Solutions Implemented:
-1. Top Selling Products
-Query the top 10 products by total sales value.
-Challenge: Include product name, total quantity sold, and total sales value.
+#### Query 1️⃣: Query the top 10 products by total sales value / Include product name, total quantity sold, and total sales value.
+
 
 ```sql
 SELECT 
@@ -193,6 +204,9 @@ GROUP BY 1, 2
 ORDER BY 3 DESC
 LIMIT 10
 ```
+![image](https://github.com/user-attachments/assets/b6207dc0-1177-4e91-b7ee-7cee4463c000)
+
+💡 Apple's iMac 24-inch and iMac 27-inch Retina sell the most units. However, the Apple iMac Pro generates the highest revenue, suggesting it has a much higher price. Apple products, in general, seem to be strong performers. 
 
 2. Revenue by Category
 Calculate total revenue generated by each product category.
@@ -552,203 +566,6 @@ order_items as oi
 ON oi.order_id = o.order_id
 GROUP BY 1)
 ```
-
-
-16. Top 5 Customers by Orders in Each State
-Identify the top 5 customers with the highest number of orders for each state.
-Challenge: Include the number of orders and total sales for each customer.
-```sql
-SELECT * FROM 
-(SELECT 
-	c.state,
-	CONCAT(c.first_name, ' ', c.last_name) as customers,
-	COUNT(o.order_id) as total_orders,
-	SUM(total_sale) as total_sale,
-	DENSE_RANK() OVER(PARTITION BY c.state ORDER BY COUNT(o.order_id) DESC) as rank
-FROM orders as o
-JOIN 
-order_items as oi
-ON oi.order_id = o.order_id
-JOIN 
-customers as c
-ON 
-c.customer_id = o.customer_id
-GROUP BY 1, 2
-) as t1
-WHERE rank <=5
-```
-
-17. Revenue by Shipping Provider
-Calculate the total revenue handled by each shipping provider.
-Challenge: Include the total number of orders handled and the average delivery time for each provider.
-
-```sql
-SELECT 
-	s.shipping_providers,
-	COUNT(o.order_id) as order_handled,
-	SUM(oi.total_sale) as total_sale,
-	COALESCE(AVG(s.return_date - s.shipping_date), 0) as average_days
-FROM orders as o
-JOIN 
-order_items as oi
-ON oi.order_id = o.order_id
-JOIN 
-shippings as s
-ON 
-s.order_id = o.order_id
-GROUP BY 1
-```
-
-18. Top 10 product with highest decreasing revenue ratio compare to last year(2022) and current_year(2023)
-Challenge: Return product_id, product_name, category_name, 2022 revenue and 2023 revenue decrease ratio at end Round the result
-Note: Decrease ratio = cr-ls/ls* 100 (cs = current_year ls=last_year)
-
-```sql
-WITH last_year_sale
-as
-(
-SELECT 
-	p.product_id,
-	p.product_name,
-	SUM(oi.total_sale) as revenue
-FROM orders as o
-JOIN 
-order_items as oi
-ON oi.order_id = o.order_id
-JOIN 
-products as p
-ON 
-p.product_id = oi.product_id
-WHERE EXTRACT(YEAR FROM o.order_date) = 2022
-GROUP BY 1, 2
-),
-
-current_year_sale
-AS
-(
-SELECT 
-	p.product_id,
-	p.product_name,
-	SUM(oi.total_sale) as revenue
-FROM orders as o
-JOIN 
-order_items as oi
-ON oi.order_id = o.order_id
-JOIN 
-products as p
-ON 
-p.product_id = oi.product_id
-WHERE EXTRACT(YEAR FROM o.order_date) = 2023
-GROUP BY 1, 2
-)
-
-SELECT
-	cs.product_id,
-	ls.revenue as last_year_revenue,
-	cs.revenue as current_year_revenue,
-	ls.revenue - cs.revenue as rev_diff,
-	ROUND((cs.revenue - ls.revenue)::numeric/ls.revenue::numeric * 100, 2) as reveneue_dec_ratio
-FROM last_year_sale as ls
-JOIN
-current_year_sale as cs
-ON ls.product_id = cs.product_id
-WHERE 
-	ls.revenue > cs.revenue
-ORDER BY 5 DESC
-LIMIT 10
-```
-
-
-19. Final Task: Stored Procedure
-Create a stored procedure that, when a product is sold, performs the following actions:
-Inserts a new sales record into the orders and order_items tables.
-Updates the inventory table to reduce the stock based on the product and quantity purchased.
-The procedure should ensure that the stock is adjusted immediately after recording the sale.
-
-```SQL
-CREATE OR REPLACE PROCEDURE add_sales
-(
-p_order_id INT,
-p_customer_id INT,
-p_seller_id INT,
-p_order_item_id INT,
-p_product_id INT,
-p_quantity INT
-)
-LANGUAGE plpgsql
-AS $$
-
-DECLARE 
--- all variable
-v_count INT;
-v_price FLOAT;
-v_product VARCHAR(50);
-
-BEGIN
--- Fetching product name and price based p id entered
-	SELECT 
-		price, product_name
-		INTO
-		v_price, v_product
-	FROM products
-	WHERE product_id = p_product_id;
-	
--- checking stock and product availability in inventory	
-	SELECT 
-		COUNT(*) 
-		INTO
-		v_count
-	FROM inventory
-	WHERE 
-		product_id = p_product_id
-		AND 
-		stock >= p_quantity;
-		
-	IF v_count > 0 THEN
-	-- add into orders and order_items table
-	-- update inventory
-		INSERT INTO orders(order_id, order_date, customer_id, seller_id)
-		VALUES
-		(p_order_id, CURRENT_DATE, p_customer_id, p_seller_id);
-
-		-- adding into order list
-		INSERT INTO order_items(order_item_id, order_id, product_id, quantity, price_per_unit, total_sale)
-		VALUES
-		(p_order_item_id, p_order_id, p_product_id, p_quantity, v_price, v_price*p_quantity);
-
-		--updating inventory
-		UPDATE inventory
-		SET stock = stock - p_quantity
-		WHERE product_id = p_product_id;
-		
-		RAISE NOTICE 'Thank you product: % sale has been added also inventory stock updates',v_product; 
-	ELSE
-		RAISE NOTICE 'Thank you for for your info the product: % is not available', v_product;
-	END IF;
-END;
-$$
-```
-
-
-
-**Testing Store Procedure**
-call add_sales
-(
-25005, 2, 5, 25004, 1, 14
-);
-
----
-
----
-
-## **Learning Outcomes**
-
-This project enabled me to:
-- Design and implement a normalized database schema.
-- Clean and preprocess real-world datasets for analysis.
-- Use advanced SQL techniques, including window functions, subqueries, and joins.
-- Conduct in-depth business analysis using SQL.
-- Optimize query performance and handle large datasets efficiently.
 
 ---
 
